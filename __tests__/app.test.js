@@ -4,6 +4,7 @@ const data = require("../db/data/test-data/index.js");
 const db = require("../db/connection.js");
 const seed = require("../db/seeds/seed.js");
 const endpoints = require("../endpoints.json");
+const toBeSorted = require("jest-sorted");
 
 beforeEach(() => seed(data));
 afterAll(() => db.end());
@@ -81,6 +82,40 @@ describe("GET /api/articles/:article_id", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Entry not found");
+      });
+  });
+});
+describe("GET /api/articles", () => {
+  test("200: Should respond with 200 status code and all current articles with their comment counts.", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        const articlesSchema = {
+          article_id: "number",
+          title: "string",
+          topic: "string",
+          author: "string",
+          created_at: "string",
+          article_img_url: "string",
+          comment_count: "string",
+        };
+        articles.forEach((article) => {
+          for (const key in articlesSchema) {
+            expect(typeof article[key]).not.toBe(undefined);
+            expect(articlesSchema[key]).toBe(typeof article[key]);
+          }
+        });
+      });
+  });
+  test("Should sort our articles by date in descending order", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toBeSorted({ key: "created_at", descending: true });
       });
   });
 });

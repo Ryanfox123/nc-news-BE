@@ -45,3 +45,42 @@ describe("200 GET /api", () => {
       });
   });
 });
+
+describe("GET /api/articles/:article_id", () => {
+  test("200: should respond with 200 status code, and a singular article from the articles table in my database, matching the ID passed into the parameters.", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body }) => {
+        const article = body.article;
+        const articleSchema = {
+          article_id: "number",
+          title: "string",
+          topic: "string",
+          author: "string",
+          body: "string",
+          created_at: "string",
+          article_img_url: "string",
+        };
+        for (const key in articleSchema) {
+          expect(articleSchema[key]).toBe(typeof article[key]);
+        }
+      });
+  });
+  test("400: should return a 400 code if passed a parametric endpoint query that is of an invalid data type or format", () => {
+    return request(app)
+      .get("/api/articles/wrongEndPoint")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("404: should return a 404 code if passed a parametric endpoint this is a valid datatype, however responds with no results.", () => {
+    return request(app)
+      .get("/api/articles/999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Entry not found");
+      });
+  });
+});

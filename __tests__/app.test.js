@@ -53,18 +53,18 @@ describe("GET /api/articles/:article_id", () => {
       .expect(200)
       .then(({ body }) => {
         const article = body.article;
-        const articleSchema = {
-          article_id: "number",
-          title: "string",
-          topic: "string",
-          author: "string",
-          body: "string",
-          created_at: "string",
-          article_img_url: "string",
+        const expectedOutput = {
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: "2020-07-09T20:11:00.000Z",
+          votes: 100,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
         };
-        for (const key in articleSchema) {
-          expect(articleSchema[key]).toBe(typeof article[key]);
-        }
+        expect(article).toEqual(expectedOutput);
       });
   });
   test("400: should return a 400 code if passed a parametric endpoint query that is of an invalid data type or format", () => {

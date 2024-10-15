@@ -3,6 +3,7 @@ const {
   fetchArticleById,
   fetchArticles,
   fetchComments,
+  fetchUsers,
 } = require("../models/fetchModels");
 
 exports.getTopics = (req, res, next) => {
@@ -41,6 +42,16 @@ exports.getComments = (req, res, next) => {
   fetchComments(article_id)
     .then((comments) => {
       res.status(200).send({ comments: comments });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.getUsers = (req, res, next) => {
+  fetchUsers()
+    .then((users) => {
+      res.status(200).send({ users: users });
     })
     .catch((err) => {
       next(err);

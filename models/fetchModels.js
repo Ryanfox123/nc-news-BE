@@ -59,3 +59,12 @@ exports.fetchComments = (articleID) => {
       return comments.rows;
     });
 };
+
+exports.fetchUsers = () => {
+  return db.query(`SELECT * FROM users;`).then((users) => {
+    if (users.rows.length === 0) {
+      return Promise.reject({ status: 404, msg: "User not found" });
+    }
+    return users.rows;
+  });
+};

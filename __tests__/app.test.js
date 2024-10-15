@@ -172,6 +172,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
+
 describe("POST /api/articles/:article_id/comments", () => {
   test("200: should post a new comment to the comments table with the parametric endpoint of article_id and respond with the comment object upon completion.", () => {
     return request(app)
@@ -212,6 +213,65 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("400: should return an error and message if parametric end point is of valid type, however no article exists for the comment to exist on.", () => {
+    return request(app)
+      .post("/api/articles/999/comments")
+      .send({ username: "rogersop", body: "I shouldnt be here!" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+});
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("200: should patch the article via article ID, increasing its votes property by the amount passed in by the body ", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: 5 })
+      .expect(200)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(article.votes).toBe(105);
+      });
+  });
+  test("200: should patch the article via article ID, decreasing its votes property by the amount passed in by the body if the number is negative", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: -5 })
+      .expect(200)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(article.votes).toBe(95);
+      });
+  });
+  test("400: should give an error if an invalid value is passed into our inc_votes property", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: "hi" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("400: should give an error if an invalid value type is passed into our parametric endpoint for article_id", () => {
+    return request(app)
+      .patch("/api/articles/hello")
+      .send({ inc_votes: 5 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("404: should give an error if a valid value type is passed into our parametric endpoint for article_id but it doesnt match any existing article, giving us a bad request msg", () => {
+    return request(app)
+      .patch("/api/articles/100")
+      .send({ inc_votes: 5 })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
       });
   });
 });

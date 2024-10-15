@@ -206,22 +206,13 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("Bad request");
       });
   });
-  test("400: should return an error and message if parametric end point is of valid type, however no article exists for the comment to exist on.", () => {
+  test("404: should return an error and message if parametric end point is of valid type, however no article exists for the comment to exist on.", () => {
     return request(app)
       .post("/api/articles/999/comments")
       .send({ username: "rogersop", body: "I shouldnt be here!" })
-      .expect(400)
+      .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad request");
-      });
-  });
-  test("400: should return an error and message if parametric end point is of valid type, however no article exists for the comment to exist on.", () => {
-    return request(app)
-      .post("/api/articles/999/comments")
-      .send({ username: "rogersop", body: "I shouldnt be here!" })
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Bad request");
+        expect(body.msg).toBe("Entry not found");
       });
   });
 });

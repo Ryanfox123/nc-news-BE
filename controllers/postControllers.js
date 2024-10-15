@@ -6,8 +6,8 @@ exports.postComment = (req, res, next) => {
   const { body } = req;
 
   const promises = [
-    createComment(article_id, body),
     fetchArticleById(article_id),
+    createComment(article_id, body),
   ];
 
   Promise.all(promises)
@@ -16,6 +16,7 @@ exports.postComment = (req, res, next) => {
       res.status(200).send({ comment: comment });
     })
     .catch((err) => {
+      console.log(err);
       next(err);
     });
 };

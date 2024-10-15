@@ -4,6 +4,7 @@ const {
   getArticleByID,
   getArticles,
   getComments,
+  getUsers,
 } = require("./controllers/getControllers");
 const endpoints = require("./endpoints.json");
 const { postComment } = require("./controllers/postControllers");
@@ -31,6 +32,8 @@ app.get("/api/articles/:article_id/comments", getComments);
 app.post("/api/articles/:article_id/comments", postComment);
 
 app.delete("/api/comments/:comment_id", deleteComment);
+
+app.get("/api/users", getUsers);
 
 app.use((req, res) => {
   res.status(404).send({ msg: "The requested endpoint does not exist." });

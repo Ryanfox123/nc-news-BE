@@ -59,5 +59,29 @@
       "article_id": 5,
       "created_at": 1606176480000
     }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "Serves to remove an individual comment from the database depending on the ID passed to the parametric endpoint",
+    "exampleResponse": "Should return only a 204 message if successfull."
+  },
+  "GET /api/users/": {
+    "description": "serves to return all available users upon request, should return an array of objects.",
+    "exampleResponse": [
+      {
+        "username": "butter_bridge",
+        "name": "jonny",
+        "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+      },
+      {
+        "username": "icellusedkars",
+        "name": "sam",
+        "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
+      },
+      {
+        "username": "rogersop",
+        "name": "paul",
+        "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+      }
+    ]
   }
 }

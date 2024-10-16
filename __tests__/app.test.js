@@ -137,12 +137,43 @@ describe("GET /api/articles", () => {
         expect(articles).toBeSorted({ key: "author", descending: false });
       });
   });
+
+  test("200: should be able to take a 'topic' query parameter that will return all articles with the matching topic", () => {
+    return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        articles.forEach((article) => {
+          expect(article.topic).toBe("cats");
+        });
+      });
+  });
+
+  test("200: should return with a 200 status code and an empty array if a valid topic is inserted as a query parameter, but no articles match it.", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles.length).toBe(0);
+      });
+  });
+  test("400: should return with a 400 status code and an error message if a valid topic data type is inserted as a query parameter, but no topics exist matching it.", () => {
+    return request(app)
+      .get("/api/articles?topic=badtopic")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Topic not found");
+      });
+  });
+
   test("400: should respond with a 400 status code if either or both of the query parameters do not match what is allowed", () => {
     return request(app)
       .get("/api/articles?sort_by=author&order_by=wrong")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad request");
+        expect(body.msg).toBe("Bad request: Invalid order_by value");
       });
   });
   test("400: should respond with a 400 status code if either or both of the query parameters do not match what is allowed", () => {
@@ -150,7 +181,7 @@ describe("GET /api/articles", () => {
       .get("/api/articles?sort_by=wrong&order_by=asc")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad request");
+        expect(body.msg).toBe("Bad request: Invalid sort_by value");
       });
   });
 });

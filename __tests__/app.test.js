@@ -59,6 +59,7 @@ describe("GET /api/articles/:article_id", () => {
           title: "Living in the shadow of a great man",
           topic: "mitch",
           author: "butter_bridge",
+          comment_count: "11",
           body: "I find this existence challenging",
           created_at: "2020-07-09T20:11:00.000Z",
           votes: 100,

@@ -220,6 +220,15 @@ describe("GET /api/articles/:article_id/comments", () => {
         });
       });
   });
+  test("200: returns an empty array if a valid article ID is passed but the article has no comments.", () => {
+    return request(app)
+      .get("/api/articles/4/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const articleComments = body.comments;
+        expect(articleComments.length).toBe(0);
+      });
+  });
   test("400: should return 400 error code and message if parametric endpoint is of wrong type or formatted incorrectly.", () => {
     return request(app)
       .get("/api/articles/wrong/comments")
@@ -233,7 +242,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/100/comments")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Not found");
+        expect(body.msg).toBe("Entry not found");
       });
   });
 });

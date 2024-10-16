@@ -24,17 +24,28 @@ exports.fetchArticleById = (articleID) => {
     });
 };
 
-exports.fetchArticles = (query) => {
-  const sortByVal = query.sort_by || "created_at";
-  let orderByVal = query.order_by || "DESC";
-  orderByVal = orderByVal.toUpperCase();
-  const validSorts = ["created_at", "title", "topic", "author", "votes"];
+exports.fetchArticles = (query, topics) => {
+  const {
+    topic: topicVal,
+    sort_by: sortByVal = "created_at",
+    order_by: orderByVal = "DESC",
+  } = query;
 
-  if (orderByVal !== "ASC" && orderByVal !== "DESC") {
-    return Promise.reject({ status: 400, msg: "Bad request" });
+  const validTopics = topics.map((topic) => topic.slug);
+  const validSorts = ["created_at", "title", "topic", "author", "votes"];
+  const normalizedOrder = orderByVal.toUpperCase();
+
+  if (normalizedOrder !== "ASC" && normalizedOrder !== "DESC") {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad request: Invalid order_by value",
+    });
   }
   if (!validSorts.includes(sortByVal)) {
-    return Promise.reject({ status: 400, msg: "Bad request" });
+    return Promise.reject({
+      status: 400,
+      msg: "Bad request: Invalid sort_by value",
+    });
   }
 
   let queryStr = `SELECT 
@@ -43,15 +54,21 @@ exports.fetchArticles = (query) => {
     FROM articles
     LEFT JOIN comments
     on articles.article_id = comments.article_id
-    GROUP BY articles.article_id, articles.title,articles.topic, articles.author, articles.created_at, articles.article_img_url, articles.votes
     `;
-  queryStr += ` ORDER BY ${sortByVal}`;
-  queryStr += ` ${orderByVal}`;
-  return db.query(queryStr).then((articles) => {
-    if (articles.rows.length === 0) {
-      return Promise.reject({ status: 404, msg: "Not found" });
+  let queryArr = [];
+  if (topicVal) {
+    if (!validTopics.includes(topicVal)) {
+      return Promise.reject({ status: 404, msg: "Topic not found" });
     }
-    return articles.rows;
+    queryStr += ` WHERE topic = $1`;
+    queryArr.push(topicVal);
+  }
+
+  queryStr += ` GROUP BY articles.article_id, articles.title,articles.topic, articles.author, articles.created_at, articles.article_img_url, articles.votes
+  ORDER BY ${sortByVal} ${normalizedOrder}`;
+
+  return db.query(queryStr, queryArr).then(({ rows }) => {
+    return rows;
   });
 };
 

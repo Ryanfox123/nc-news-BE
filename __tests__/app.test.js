@@ -110,13 +110,47 @@ describe("GET /api/articles", () => {
         });
       });
   });
-  test("Should sort our articles by date in descending order", () => {
+  test("200: Should sort our articles by created_at in descending order by default", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
       .then(({ body }) => {
         const articles = body.articles;
         expect(articles).toBeSorted({ key: "created_at", descending: true });
+      });
+  });
+  test("200: should have optional query parameters to sort by an valid columns in the table such as votes", () => {
+    return request(app)
+      .get("/api/articles?sort_by=votes")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toBeSorted({ key: "votes", descending: true });
+      });
+  });
+  test("200: should have optional query parameters to sort by an valid columns in the table such as author, and also an additional paramater for ascending or descending", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author&order_by=asc")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toBeSorted({ key: "author", descending: false });
+      });
+  });
+  test("400: should respond with a 400 status code if either or both of the query parameters do not match what is allowed", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author&order_by=wrong")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("400: should respond with a 400 status code if either or both of the query parameters do not match what is allowed", () => {
+    return request(app)
+      .get("/api/articles?sort_by=wrong&order_by=asc")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
       });
   });
 });

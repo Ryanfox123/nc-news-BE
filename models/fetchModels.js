@@ -100,3 +100,22 @@ exports.fetchUsers = () => {
     return users.rows;
   });
 };
+
+exports.fetchUsername = (username) => {
+  const regex = /^[A-Za-z][A-Za-z0-9_]{7,29}$/;
+  if (!regex.test(username)) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+  return db
+    .query(
+      `SELECT * FROM users
+    WHERE username = $1`,
+      [username]
+    )
+    .then((user) => {
+      if (user.rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "User not found" });
+      }
+      return user.rows[0];
+    });
+};

@@ -4,6 +4,7 @@ const {
   fetchArticles,
   fetchComments,
   fetchUsers,
+  fetchUsername,
 } = require("../models/fetchModels");
 
 exports.getTopics = (req, res, next) => {
@@ -59,6 +60,17 @@ exports.getUsers = (req, res, next) => {
   fetchUsers()
     .then((users) => {
       res.status(200).send({ users: users });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.getUsername = (req, res, next) => {
+  const { username } = req.params;
+  fetchUsername(username)
+    .then((user) => {
+      res.status(200).send({ user: user });
     })
     .catch((err) => {
       next(err);

@@ -33,7 +33,7 @@ I am using Supabase to host my database and Render to host my api. You should no
 
 ## Creating .ENV files
 
-This project requires 2 .env files to be created to work locally, one for your testing, one for development. Inside each file should contain variables that will assign the database you intend to connect to. Look inside `./db/connection.js` to understand better how this works.
+This project requires 2 .env files to be created to work locally, one for your testing, one for development. Inside each file should contain variables that will assign the database you intend to connect to. Look inside [connection.js](./db/connection.js) to understand better how this works.
 
 For example inside `.env.test` you would find:
 `PGDATABASE=example_test_db`.

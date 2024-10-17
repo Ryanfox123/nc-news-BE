@@ -7,24 +7,33 @@ const seed = require("../../db/seeds/seed.js");
 beforeEach(() => seed(data));
 afterAll(() => db.end());
 
-describe("PATCH /api/articles/:article_id", () => {
-  test("200: should patch the article via article ID, increasing its votes property by the amount passed in by the body ", () => {
+describe("PATCH /api/comments/:comment_id", () => {
+  test("200: Should update a given comments total votes (increasing or decreasing) based on the amount passed into the request body", () => {
     return request(app)
-      .patch("/api/articles/1")
+      .patch("/api/comments/1")
       .send({ inc_votes: 5 })
       .expect(200)
       .then(({ body }) => {
-        const article = body.article;
-        expect(article.votes).toBe(105);
+        const comment = body.comment;
+        expect(comment.votes).toBe(21);
       });
   });
   test("400: if request body for inc_votes is of wrong data type, should throw an error for bad request ", () => {
     return request(app)
-      .patch("/api/articles/1")
+      .patch("/api/comments/1")
       .send({ inc_votes: "Five" })
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("400: if request body is empty, should throw an error for bad request ", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({})
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request: you must provide a request body.");
       });
   });
 });

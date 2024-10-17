@@ -1,6 +1,7 @@
-# NC-NEWS-BE
+# NC-NEWS-BACKEND
 
-An express API to...
+An express API to mimic a service such as reddit, a classic article based news backend that can provide
+articles, comments and users information.
 
 ## Prerequisites
 
@@ -28,4 +29,4 @@ Once completed, to start the application:
 nc-news-be $ npm start
 ```
 
-You should now be able to visit `http://localhost:8080/api/topics`, for a full list of topics, view [endpoints.json](./endpoints.json).
+I am using Supabase to host my database and Render to host my api. You should now be able to visit `https://nc-news-app-ftk2.onrender.com/api/articles`, for a full list of possible endpoints, view [endpoints.json](./endpoints.json).

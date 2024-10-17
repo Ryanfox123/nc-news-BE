@@ -39,7 +39,8 @@
       "jest-extended/all"
     ]
   },
-  "engine": {
-    "node": 22
-  }
+  "engines": {
+    "node": "22.x"
+  },
+  "engineStrict": true
 }

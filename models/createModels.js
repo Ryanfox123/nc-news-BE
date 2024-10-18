@@ -16,3 +16,29 @@ exports.createComment = (id, body) => {
     return comment.rows[0];
   });
 };
+exports.createArticle = (body) => {
+  body.article_image_url =
+    body.article_image_url ||
+    "https://i.pinimg.com/564x/ed/d5/02/edd502762e217ed59da71d007ec1ff3b.jpg";
+  const newBody = [
+    body.author,
+    body.title,
+    body.body,
+    body.topic,
+    body.article_image_url,
+  ];
+
+  const formattedBody = format(
+    `
+    INSERT INTO articles
+    (author, title, body, topic, article_img_url)
+    VALUES %L
+    RETURNING *;`,
+    [newBody]
+  );
+  return db.query(formattedBody).then((article) => {
+    const finalArticle = article.rows[0];
+    finalArticle.comment_count = 0;
+    return finalArticle;
+  });
+};

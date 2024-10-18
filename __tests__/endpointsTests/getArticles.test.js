@@ -14,7 +14,7 @@ describe("GET /api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body }) => {
-        const articles = body.articles;
+        const articles = body.articles[0];
         const articlesSchema = {
           article_id: "number",
           title: "string",
@@ -37,7 +37,7 @@ describe("GET /api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body }) => {
-        const articles = body.articles;
+        const articles = body.articles[0];
         expect(articles).toBeSorted({ key: "created_at", descending: true });
       });
   });
@@ -46,7 +46,7 @@ describe("GET /api/articles", () => {
       .get("/api/articles?sort_by=votes")
       .expect(200)
       .then(({ body }) => {
-        const articles = body.articles;
+        const articles = body.articles[0];
         expect(articles).toBeSorted({ key: "votes", descending: true });
       });
   });
@@ -55,7 +55,7 @@ describe("GET /api/articles", () => {
       .get("/api/articles?sort_by=author&order_by=asc")
       .expect(200)
       .then(({ body }) => {
-        const articles = body.articles;
+        const articles = body.articles[0];
         expect(articles).toBeSorted({ key: "author", descending: false });
       });
   });
@@ -65,7 +65,19 @@ describe("GET /api/articles", () => {
       .get("/api/articles?topic=cats")
       .expect(200)
       .then(({ body }) => {
-        const articles = body.articles;
+        const articles = body.articles[0];
+        articles.forEach((article) => {
+          expect(article.topic).toBe("cats");
+        });
+      });
+  });
+  test("200: should be able to take a 'topic' query parameter on top of sorting parameters.", () => {
+    return request(app)
+      .get("/api/articles?topic=cats&sort_by=author&order_by=asc")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles[0];
+        expect(articles).toBeSorted({ key: "author", descending: false });
         articles.forEach((article) => {
           expect(article.topic).toBe("cats");
         });
@@ -77,10 +89,11 @@ describe("GET /api/articles", () => {
       .get("/api/articles?topic=paper")
       .expect(200)
       .then(({ body }) => {
-        const articles = body.articles;
+        const articles = body.articles[0];
         expect(articles.length).toBe(0);
       });
   });
+
   test("400: should return with a 400 status code and an error message if a valid topic data type is inserted as a query parameter, but no topics exist matching it.", () => {
     return request(app)
       .get("/api/articles?topic=badtopic")
@@ -90,20 +103,56 @@ describe("GET /api/articles", () => {
       });
   });
 
-  test("400: should respond with a 400 status code if either or both of the query parameters do not match what is allowed", () => {
+  test("200: pagination implementation, should return only specified number entries of data specified on the query params.", () => {
     return request(app)
-      .get("/api/articles?sort_by=author&order_by=wrong")
-      .expect(400)
+      .get("/api/articles?limit=10")
+      .expect(200)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad request: Invalid order_by value");
+        const articles = body.articles[0];
+        expect(articles.length).toBe(10);
       });
   });
-  test("400: should respond with a 400 status code if either or both of the query parameters do not match what is allowed", () => {
+  test("200: pagination implementation, should return only specified number entries of data on the correct page specified on the query params.", () => {
     return request(app)
-      .get("/api/articles?sort_by=wrong&order_by=asc")
-      .expect(400)
+      .get("/api/articles?limit=10&p=2")
+      .expect(200)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad request: Invalid sort_by value");
+        const articles = body.articles[0];
+        //only 13 articles in test database, therefore page 2 would only return 3 results.
+        expect(articles.length).toBe(3);
+      });
+  });
+  test("200: pagination implementation, should return only specified number entries of data on the correct page specified on the query params.", () => {
+    return request(app)
+      .get("/api/articles?limit=10&p=2")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles[0];
+        //only 13 articles in test database, therefore page 2 would only return 3 results.
+        expect(articles.length).toBe(3);
+      });
+  });
+  test("200: pagination implementation, additional testing for page/limit combinations.", () => {
+    return request(app)
+      .get("/api/articles?limit=5&p=2")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles[0];
+        expect(articles.length).toBe(5);
+      });
+  });
+  test("200: pagination implementation, response array should now contain an additional element to articles: total entries found within the query, disregarding pagination. ", () => {
+    return request(app)
+      .get("/api/articles?limit=5&p=2")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles[0].length).toBe(5);
+        expect(articles[1]).toEqual({
+          limit: "5",
+          page: "2",
+          articleTotal: "13",
+        });
       });
   });
 });

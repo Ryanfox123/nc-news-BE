@@ -147,6 +147,7 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         const articles = body.articles;
+        console.log(articles[1]);
         expect(articles[0].length).toBe(5);
         expect(articles[1]).toEqual({
           limit: "5",

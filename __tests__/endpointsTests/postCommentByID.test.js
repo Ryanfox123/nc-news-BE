@@ -44,9 +44,9 @@ describe("POST /api/articles/:article_id/comments", () => {
     return request(app)
       .post("/api/articles/999/comments")
       .send({ username: "rogersop", body: "I shouldnt be here!" })
-      .expect(404)
+      .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Entry not found");
+        expect(body.msg).toBe("Bad request");
       });
   });
 });

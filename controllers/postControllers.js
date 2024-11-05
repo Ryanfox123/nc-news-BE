@@ -1,5 +1,5 @@
 const { createComment, createArticle } = require("../models/createModels");
-const { fetchArticleById, fetchTopics } = require("../models/fetchModels");
+const { fetchArticleById } = require("../models/fetchModels");
 
 exports.postComment = (req, res, next) => {
   const { article_id } = req.params;
@@ -12,7 +12,8 @@ exports.postComment = (req, res, next) => {
 
   Promise.all(promises)
     .then((results) => {
-      const comment = results[0];
+      const comment = results[1];
+      console.log(comment, "<<<<here");
       res.status(200).send({ comment: comment });
     })
     .catch((err) => {
@@ -27,7 +28,6 @@ exports.postArticle = (req, res, next) => {
       res.status(200).send({ article: article });
     })
     .catch((err) => {
-      console.log(err);
       if (err.constraint === "articles_topic_fkey") {
         err = {
           status: 404,

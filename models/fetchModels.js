@@ -54,7 +54,14 @@ exports.fetchArticles = (query, topics) => {
   }
 
   if (
-    !["created_at", "title", "topic", "author", "votes"].includes(sortByVal)
+    ![
+      "created_at",
+      "title",
+      "topic",
+      "author",
+      "votes",
+      "comment_count",
+    ].includes(sortByVal)
   ) {
     sortByVal = "created_at";
   }

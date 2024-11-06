@@ -13,7 +13,6 @@ exports.postComment = (req, res, next) => {
   Promise.all(promises)
     .then((results) => {
       const comment = results[1];
-      console.log(comment, "<<<<here");
       res.status(200).send({ comment: comment });
     })
     .catch((err) => {

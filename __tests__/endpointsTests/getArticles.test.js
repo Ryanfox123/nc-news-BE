@@ -77,6 +77,7 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         const articles = body.articles[0];
+        console.log(articles);
         expect(articles).toBeSorted({ key: "author", descending: false });
         articles.forEach((article) => {
           expect(article.topic).toBe("cats");
